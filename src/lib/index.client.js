@@ -24,14 +24,7 @@ export default class Application {
         }
     }
 
-    navigate(url, push = true) {
-        // 如果瀏覽器不支援 History API
-        if (!history.pushState) {
-            // 就設定 location，並返回
-            window.location = url;
-            return undefined;
-        }
-
+    createController(url) {
         // 分析路徑與搜尋字串
         let urlParts = url.split('?');
         // 將 URL 的不同部分析解成陣列
@@ -42,16 +35,45 @@ export default class Application {
         let {route, params} = match;
         // 在路由表查詢 Controller 類別
         let Controller = this.routes[route];
-        // 如果路由匹配且 Controller 類別存在
-        if (route && Controller) {
+
+        return Controller ?
             // 建構控制器實例
-            const controller = new Controller({
+            new Controller({
                 // 將 search 字串剖析成物件
                 query: queryString.parse(search),
                 params: params,
                 cookie: cookie
-            });
+            }) : undefined;
+    }
 
+    // 封裝在 rehydrate 方法中被使用的程式碼
+    // 以及 start 方法中的 popStateListener
+    getUrl() {
+        let {pathname, search} = window.location;
+        return `${pathname}${search}`;
+    }
+
+    rehydrate() {
+        let targetEl = document.querySelector(this.options.target);
+
+        this.controller = this.createController(this.getUrl());
+        this.controller.deserialize();
+        this.controller.attach(targetEl);
+    }
+
+    navigate(url, push = true) {
+        // 如果瀏覽器不支援 History API
+        if (!history.pushState) {
+            // 就設定 location，並返回
+            window.location = url;
+            return undefined;
+        }
+
+        let previousController = this.controller;
+        this.controller = this.createController(url);
+
+        // 如果控制器被建立，就處理導覽
+        if (this.controller) {
             // request 與 reply 存根
             const request = () => {
             };
@@ -63,18 +85,25 @@ export default class Application {
                 history.pushState({}, null, url);
             }
 
-            controller.index(this, request, reply, (err) => {
+            // 執行控制器動作
+            this.controller.index(this, request, reply, (err) => {
                 if (err) {
                     return reply(err);
                 }
 
+                let targetEl = document.querySelector(this.options.target);
+                if (previousController) {
+                    previousController.detach(targetEl);
+                }
+
                 // 渲染控制器回應
-                controller.render(this.options.target, (err, response) => {
+                this.controller.render(this.options.target, (err, response) => {
                     if (err) {
                         return reply(err);
                     }
 
                     reply(response);
+                    this.controller.attach(targetEl);
                 });
             });
         }
@@ -83,8 +112,7 @@ export default class Application {
     start() {
         // 建立事件監聽器
         this.popStateListener = window.addEventListener('popstate', (event) => {
-            let {pathname, search} = window.location;
-            let url = `${pathname}${search}`;
+            let url = this.getUrl();
             console.log(url);
             this.navigate(url, false);
         });
@@ -107,6 +135,8 @@ export default class Application {
                 this.navigate(identifier || href);
             }
         });
+
+        this.rehydrate();
     }
 
 }

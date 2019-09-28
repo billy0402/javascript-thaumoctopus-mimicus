@@ -18,21 +18,40 @@ function getName(request) {
     return name;
 }
 
+function onClick(event) {
+    console.log(event.currentTarget);
+}
+
 export default class HelloController extends Controller {
 
     index(application, request, reply, callback) {
         this.context.cookie.set('random', '_' + (Math.floor(Math.random() * 1000) + 1), {path: '/'});
+        this.context.data = {random: Math.floor(Math.random() * 1000) + 1};
         callback(null);
     }
 
     toString(callback) {
+        // 這可以透過 Object.assign 做更妥善的處理
+        // 但為求簡潔，我們不包括 polyfill 的依賴套件
+        let context = getName(this.context);
+        context.data = this.context.data;
+
         // 讀取模板並且使用上下文物件進行編譯
-        nunjucks.render('hello.html', getName(this.context), (err, html) => {
+        nunjucks.render('hello.html', context, (err, html) => {
             if (err) {
                 return callback(err, null);
             }
             callback(null, html);
         });
+    }
+
+    attach(el) {
+        console.log(this.context.data.random);
+        this.clickHandler = el.addEventListener('click', onClick, false);
+    }
+
+    detach(el) {
+        el.removeEventListener('click', onClick, false);
     }
 
 }

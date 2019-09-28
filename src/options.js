@@ -39,7 +39,8 @@ export default {
         // 讀取模板並且使用上下文物件進行編譯
         nunjucks.render('./index.html', {
             body: body,
-            application: APP_FILE_PATH
+            application: APP_FILE_PATH,
+            state: controller.serialize()
         }, (err, html) => {
             if (err) {
                 return callback(err, null);
