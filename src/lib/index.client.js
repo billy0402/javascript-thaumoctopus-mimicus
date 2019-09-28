@@ -1,5 +1,7 @@
 import Call from 'call';
 import queryString from 'query-string';
+import cookie from './cookie.client';
+import replyFactory from './reply.client';
 
 export default class Application {
 
@@ -46,27 +48,35 @@ export default class Application {
             const controller = new Controller({
                 // 將 search 字串剖析成物件
                 query: queryString.parse(search),
-                params: params
+                params: params,
+                cookie: cookie
             });
 
             // request 與 reply 存根
             const request = () => {
             };
-            const reply = () => {
-            };
+            const reply = replyFactory(this);
+
+            // 僅於 push 屬性為真時
+            if (push) {
+                // 推入 history 堆疊
+                history.pushState({}, null, url);
+            }
+
             controller.index(this, request, reply, (err) => {
                 if (err) {
                     return reply(err);
                 }
+
+                // 渲染控制器回應
+                controller.render(this.options.target, (err, response) => {
+                    if (err) {
+                        return reply(err);
+                    }
+
+                    reply(response);
+                });
             });
-        }
-
-        console.log(url);
-
-        // 僅於 push 屬性為真時
-        if (push) {
-            // 推入 history 堆疊
-            history.pushState({}, null, url);
         }
     }
 
@@ -75,6 +85,7 @@ export default class Application {
         this.popStateListener = window.addEventListener('popstate', (event) => {
             let {pathname, search} = window.location;
             let url = `${pathname}${search}`;
+            console.log(url);
             this.navigate(url, false);
         });
 

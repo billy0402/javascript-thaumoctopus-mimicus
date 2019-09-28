@@ -20,6 +20,11 @@ function getName(request) {
 
 export default class HelloController extends Controller {
 
+    index(application, request, reply, callback) {
+        this.context.cookie.set('random', '_' + (Math.floor(Math.random() * 1000) + 1), {path: '/'});
+        callback(null);
+    }
+
     toString(callback) {
         // 讀取模板並且使用上下文物件進行編譯
         nunjucks.render('hello.html', getName(this.context), (err, html) => {
