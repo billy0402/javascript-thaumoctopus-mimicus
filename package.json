@@ -1,0 +1,26 @@
+{
+  "name": "thaumoctopus-mimicus",
+  "version": "1.0.0",
+  "description": "An isomorphic JavaScript application example.",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "isomorphic",
+    "JavaScript"
+  ],
+  "author": "Billy Huang",
+  "license": "MIT",
+  "dependencies": {
+    "@hapi/hapi": "^18.3.2"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/preset-env": "^7.6.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-nodemon": "^2.4.2"
+  }
+}
