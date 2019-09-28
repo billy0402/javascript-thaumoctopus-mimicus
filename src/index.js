@@ -1,4 +1,4 @@
-import Hapi from '@hapi/hapi';
+import Hapi from 'hapi';
 import nunjucks from 'nunjucks';
 
 import Application from './lib';
@@ -9,7 +9,8 @@ import HelloController from './helloController';
 nunjucks.configure('./dist', {autoescape: false});
 
 // 使用主機與埠號建立伺服器
-const server = new Hapi.server({
+const server = new Hapi.Server();
+server.connection({
     host: 'localhost',
     port: 3000
 });

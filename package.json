@@ -13,7 +13,7 @@
   "author": "Billy Huang",
   "license": "MIT",
   "dependencies": {
-    "@hapi/hapi": "^18.3.2",
+    "hapi": "^8.8.1",
     "nunjucks": "^3.2.0"
   },
   "devDependencies": {

@@ -22,26 +22,23 @@ export default class Application {
                     params: request.params
                 });
 
-                return new Promise((resolve, reject) => {
-                    controller.index(this, request, reply, (err) => {
+                controller.index(this, request, reply, (err) => {
+                    if (err) {
+                        return reply(err);
+                    }
+
+                    controller.toString((err, html) => {
                         if (err) {
-                            return reject(err);
+                            return reply(err);
                         }
 
-                        controller.toString((err, html) => {
+                        this.document(this, controller, request, reply, html, function (err, html) {
                             if (err) {
-                                return reject(err);
+                                return reply(err);
                             }
 
-                            this.document(this, controller, request, reply, html,
-                                function (err, html) {
-                                    if (err) {
-                                        return reject(err);
-                                    }
-
-                                    // 回覆 HTML 回應
-                                    return resolve(html);
-                                });
+                            // 回覆 HTML 回應
+                            reply(html);
                         });
                     });
                 });
