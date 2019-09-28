@@ -22,7 +22,7 @@ export default class HelloController extends Controller {
 
     toString(callback) {
         // 讀取模板並且使用上下文物件進行編譯
-        nunjucks.renderString('<p>Hello, {{fname}} {{lname}}!</p>', getName(this.context), (err, html) => {
+        nunjucks.render('hello.html', getName(this.context), (err, html) => {
             if (err) {
                 return callback(err, null);
             }

@@ -12,16 +12,26 @@
   ],
   "author": "Billy Huang",
   "license": "MIT",
+  "browser": {
+    "./src/options.js": "./src/options.client.js",
+    "./src/lib/index.js": "./src/lib/index.client.js"
+  },
   "dependencies": {
+    "call": "^5.0.3",
     "hapi": "^8.8.1",
-    "nunjucks": "^3.2.0"
+    "nunjucks": "^3.2.0",
+    "path": "^0.12.7",
+    "query-string": "^6.8.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.0",
     "@babel/core": "^7.6.0",
     "@babel/preset-env": "^7.6.0",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.0",
     "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
-    "gulp-nodemon": "^2.4.2"
+    "gulp-nodemon": "^2.4.2",
+    "vinyl-source-stream": "^2.0.0"
   }
 }
